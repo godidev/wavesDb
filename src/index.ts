@@ -4,7 +4,7 @@ import { buoysRouter } from './routes/buoys'
 import { scrapeRouter } from './routes/scrape'
 import { SurfForecastRouter } from './routes/surf-forecast'
 import { connectToDatabase } from './db'
-const { MONGO_URL } = process.env
+const { PORT, MONGO_URL } = process.env
 
 if (!MONGO_URL) {
   console.error(
@@ -25,6 +25,10 @@ app.use('/surf-forecast', SurfForecastRouter)
 connectToDatabase(MONGO_URL).catch((err) => {
   console.error('Failed to connect to database:', err)
   process.exit(1)
+})
+
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`)
 })
 
 module.exports = (req: Request, res: Response) => {

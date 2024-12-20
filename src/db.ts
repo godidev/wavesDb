@@ -1,15 +1,8 @@
 import mongoose, { Connection } from 'mongoose'
 
-let cachedDb: Connection | null = null
-
 export const connectToDatabase = async (
   mongoUrl: string,
 ): Promise<Connection> => {
-  if (cachedDb) {
-    console.log('Using existing database connection')
-    return cachedDb
-  }
-
   try {
     const connection = await mongoose.connect(mongoUrl, {
       connectTimeoutMS: 60000,
@@ -17,9 +10,7 @@ export const connectToDatabase = async (
       serverSelectionTimeoutMS: 5000,
     })
 
-    cachedDb = connection.connection
-    console.log('Connected to database')
-    return cachedDb
+    return connection.connection
   } catch (err) {
     console.error('Error connecting to MongoDB:', err)
     throw err
