@@ -10,7 +10,7 @@ if (!MONGO_URL) {
   console.error(
     'MONGO_URL is not defined. Please check your environment variables.',
   )
-  process.exit(1) // Exit the process if MONGO_URL is not set
+  process.exit(1)
 }
 
 const app = express()
@@ -22,12 +22,36 @@ app.use('/buoys', buoysRouter)
 app.use('/scrape', scrapeRouter)
 app.use('/surf-forecast', SurfForecastRouter)
 
-mongoose
-  .connect(MONGO_URL)
-  .then(() => {
+let cachedDb: mongoose.Mongoose | null = null
+
+const connectToDatabase = async () => {
+  if (cachedDb) {
+    console.log('Using existing database connection')
+    return cachedDb
+  }
+
+  try {
+    const connection = await mongoose.connect(MONGO_URL, {
+      connectTimeoutMS: 60000,
+      socketTimeoutMS: 60000,
+    })
+
+    cachedDb = connection
     console.log('Connected to database')
+    return connection
+  } catch (err) {
+    console.error('Error connecting to MongoDB:', err)
+    throw err
+  }
+}
+
+connectToDatabase()
+  .then(() => {
     app.listen(PORT, () => {
       console.log(`App listening on port ${PORT}`)
     })
   })
-  .catch((err) => console.error(err))
+  .catch((err) => {
+    console.error('Failed to start app due to DB connection failure', err)
+    process.exit(1)
+  })
