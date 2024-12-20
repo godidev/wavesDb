@@ -1,36 +1,33 @@
-import express, { json, Request, Response } from 'express'
+import express, { json } from 'express'
+import mongoose from 'mongoose'
 import cors from 'cors'
 import { buoysRouter } from './routes/buoys'
 import { scrapeRouter } from './routes/scrape'
 import { SurfForecastRouter } from './routes/surf-forecast'
-import { connectToDatabase } from './db'
-const { PORT, MONGO_URL } = process.env
+const { PORT = 3000, MONGO_URL } = process.env
 
 if (!MONGO_URL) {
   console.error(
     'MONGO_URL is not defined. Please check your environment variables.',
   )
-  process.exit(1)
+  process.exit(1) // Exit the process if MONGO_URL is not set
 }
 
 const app = express()
-
 app.use(cors({ origin: '*' }))
+
 app.use(json())
 
 app.use('/buoys', buoysRouter)
 app.use('/scrape', scrapeRouter)
 app.use('/surf-forecast', SurfForecastRouter)
 
-connectToDatabase(MONGO_URL).catch((err) => {
-  console.error('Failed to connect to database:', err)
-  process.exit(1)
-})
-
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`)
-})
-
-module.exports = (req: Request, res: Response) => {
-  app(req, res)
-}
+mongoose
+  .connect(MONGO_URL)
+  .then(() => {
+    console.log('Connected to database')
+    app.listen(PORT, () => {
+      console.log(`App listening on port ${PORT}`)
+    })
+  })
+  .catch((err) => console.error(err))
