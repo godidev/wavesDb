@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/arm64
+    image: mi-backend-arm64
+    ports:
+      - '3000:3000'
+    env_file:
+      - ./dist/.env
+    restart: always

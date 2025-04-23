@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Boya de Bilbao-Vizcaya",
+    "station": "2136",
+    "body": "[34, 13, 20, 21, 32]"
+  },
+  {
+    "name": "Propagacion de oleaje Bilbao-Vizcaya",
+    "station": "7113",
+    "body": "[13, 20, 32, 34]"
+  }
+]
