@@ -92,7 +92,7 @@ async function parseForecast(html: string) {
       height,
       period,
       waveDirection: invertAngle(waveDirection),
-      windSpeed: speed,
+      windSpeed: invertAngle(speed),
       windAngle: invertAngle(windAngle),
       windLetters,
       energy: energyValue,
