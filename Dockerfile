@@ -2,11 +2,21 @@ FROM node:20-slim
 
 WORKDIR /app
 
+# Copiar archivos de dependencias
 COPY package.json package-lock.json ./
 RUN npm install --omit=dev
 
+# Instalar pm2 globalmente
 RUN npm install -g pm2
 
+# Copiar el código fuente necesario para la compilación
+COPY .env ./dist/.env
+COPY . .
+
+# Generar el directorio dist
+RUN npm run build
+
+# Copiar dist (este paso puede ser redundante si dist ya está en el lugar correcto)
 COPY dist ./dist
 
 EXPOSE 3000
